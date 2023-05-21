@@ -6,7 +6,7 @@ type Message struct {
 	UserId      string
 	Target      string
 	CreateTime  time.Time
-	MessageType int
+	MessageType int32
 	Text        string
 	Url         string
 	File        []byte

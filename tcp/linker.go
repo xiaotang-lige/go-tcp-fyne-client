@@ -1,6 +1,7 @@
 package tcp
 
 import (
+	"encoding/json"
 	"fmt"
 	"go_gui/model"
 	"log"
@@ -21,7 +22,14 @@ func TcpDialListen() error {
 		CreateTime: time.Time{},
 		Chanl:      1,
 	}
-	if err = TcpServerApi.MessageWrite(TcpDb, au); err != nil {
+	context, err := json.Marshal(au)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	by, _ := Encode(context)
+	_, err = TcpDb.Write(by)
+	if err != nil {
 		log.Println("tcp对接服务器失败！:", err)
 		return err
 	}
