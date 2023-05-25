@@ -1,41 +1,27 @@
 package main
 
 import (
-	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
-	"github.com/flopp/go-findfont"
 	"go_gui/data"
 	"go_gui/model"
 	"go_gui/tcp"
-	"os"
+	"go_gui/ui"
 	"strconv"
-	"strings"
 	"time"
 )
 
-// 中文字体
-func init() {
-	fontPaths := findfont.List()
-	for _, path := range fontPaths {
-		fmt.Println(path)
-		//楷体:simkai.ttf
-		//黑体:simhei.ttf
-		if strings.Contains(path, "simhei.ttf") {
-			os.Setenv("FYNE_FONT", path)
-			break
-		}
-	}
-}
 func main() {
-	os.Unsetenv("FYNE_FONT")
-	tcp.TcpDialListen()
-	tcp.Main()
-	//show()
-	uiMain()
+	//os.Unsetenv("FYNE_FONT")
+	//tcp.TcpDialListen()
+	//tcp.Main()
+	////show()
+	//uiMain()
+
+	ui.Main()
 }
 func uiMain() {
 	myApp := app.New()
