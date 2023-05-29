@@ -10,7 +10,7 @@ import (
 	"net"
 )
 
-func (Tcp) messageListen(c net.Conn) {
+func (*Tcp) messageListen(c net.Conn) {
 	reader := bufio.NewReader(c)
 	for {
 		megbyte, err := Decode(reader)
@@ -24,7 +24,7 @@ func (Tcp) messageListen(c net.Conn) {
 		data.MessageData <- msg
 	}
 }
-func (Tcp) MessageWrite(c net.Conn, mes interface{}) error {
+func (*Tcp) MessageWrite(c net.Conn, mes interface{}) error {
 	context, err := json.Marshal(mes)
 	if err != nil {
 		log.Println(err)

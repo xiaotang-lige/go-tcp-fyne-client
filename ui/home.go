@@ -8,6 +8,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"go_gui/data"
 	"go_gui/model"
+	"go_gui/server"
 	"go_gui/tcp"
 	"image/color"
 	"strconv"
@@ -15,33 +16,63 @@ import (
 )
 
 func newHome(w fyne.Window) {
-
 	messageContext := container.NewMax()
-	listConext := container.NewMax(newList(messageContext))
-	split := container.NewHSplit(listConext, messageContext)
+	list := newList(messageContext)
+	mes := func(c *fyne.Container, id string) *fyne.Container {
+		c.RemoveAll()
+		c.Add(newMessageContext(id))
+		return c
+	}
+	mes(messageContext, "1")
+
+	tabs := container.NewAppTabs(
+		container.NewTabItem("message", messageList(messageContext)),
+		container.NewTabItem("linkman", list),
+	)
+	//tabs.Append(container.NewTabItemWithIcon("Home", theme.HomeIcon(), widget.NewLabel("Home tab")))
+	tabs.SetTabLocation(container.TabLocationBottom)
+
+	split := container.NewHSplit(tabs, messageContext)
 	split.Offset = 0.3
 	w.SetContent(container.NewMax(split))
 }
-
-func newList(c *fyne.Container) *widget.List {
-	var data []string
-	for i := 0; i < 99; i++ {
-		data = append(data, strconv.Itoa(i))
+func messageList(c *fyne.Container) *fyne.Container {
+	grid := container.NewVBox()
+	//go func() {
+	//	for  {
+	//		time.Sleep(time.Duration(2) * time.Second)
+	//		grid.Remove(grid.Objects[0])
+	//	}
+	//}()
+	//var dataIndex map[string]int
+	for i := 0; i < 9; i++ {
+		grid.Add(widget.NewLabel(strconv.Itoa(i)))
 	}
+	return container.NewBorder(nil, nil, nil, nil, grid)
+}
+func newList(c *fyne.Container) *widget.List {
+	listData, l := server.Api.Likman.ShowAll()
 	list := widget.NewList(
 		func() int {
-			return len(data)
+			return l
 		},
 		func() fyne.CanvasObject {
-			return widget.NewLabel("")
+			hbox := container.NewGridWithColumns(2)
+			tible := container.NewMax(widget.NewLabel("table"))
+			hbox.Add(tible)
+			hbox.Add(widget.NewLabel(""))
+			return hbox
 		},
 		func(i widget.ListItemID, o fyne.CanvasObject) {
-			o.(*widget.Label).SetText(data[i])
+			//o.(*widget.Label).SetText(listData[i].B)
+			o.(*fyne.Container).Objects[0].(*fyne.Container).Objects[0].(*widget.Label).SetText(listData[i].B)
 		})
+
 	list.OnSelected = func(id widget.ListItemID) {
 		c.RemoveAll()
-		c.Add(newMessageContext(data[id]))
+		c.Add(newMessageContext(listData[id].B))
 	}
+
 	return list
 }
 func newMessageContext(s string) *fyne.Container {
@@ -49,44 +80,30 @@ func newMessageContext(s string) *fyne.Container {
 	line := canvas.NewLine(color.White)
 	line.StrokeWidth = 5
 	text := widget.NewMultiLineEntry()
-	textMax := container.New(layout.NewGridWrapLayout(fyne.NewSize(450, 300)), text)
-	input := widget.NewMultiLineEntry()
-	button := widget.NewButton("send", func() {
 
-	})
-	maxContext := container.NewMax(container.NewVBox(table, textMax, input, button))
-	return maxContext
-}
-func home(w fyne.Window) {
-	var data []string
-	for i := 0; i < 99; i++ {
-		data = append(data, strconv.Itoa(i))
-	}
-	content := container.NewMax()
-	list := widget.NewList(
-		func() int {
-			return len(data)
-		},
-		func() fyne.CanvasObject {
-			return widget.NewLabel("")
-		},
-		func(i widget.ListItemID, o fyne.CanvasObject) {
-			o.(*widget.Label).SetText(data[i])
-
-		})
+	//textMax := container.New(layout.NewGridWrapLayout(fyne.NewSize(450, 300)), text)
 	input := widget.NewMultiLineEntry()
 	input.SetPlaceHolder("Enter text...")
-	input.Wrapping = fyne.TextWrapWord
-	context := container.NewVBox()
-	list.OnSelected = func(id widget.ListItemID) {
-		context.RemoveAll()
-		context.Add(MessageShow(data[id]))
-	}
-	tutorial := container.NewBorder(context, nil, nil, nil, content)
-	split := container.NewHSplit(list, tutorial)
-	split.Offset = 0.3
-	w.SetContent(container.NewVBox(split))
+	button := widget.NewButton("send", func() {
+		sendButton(input, s)
+	})
+	//
+
+	bottom := container.NewBorder(nil, nil, nil, button, container.NewMax(input))
+	con := container.NewMax(text)
+	maxContext := container.NewMax(container.NewBorder(table, bottom, nil, nil, con))
+	return maxContext
 }
+func sendButton(input *widget.Entry, target string) {
+	model.MessageDataShow <- &model.Message{
+		Target:      target,
+		CreateTime:  time.Time{},
+		MessageType: 1,
+		Text:        input.Text,
+	}
+	input.SetText("")
+}
+
 func MessageShow(s string) *fyne.Container {
 	la := widget.NewLabel(s)
 	data.MyContext = widget.NewMultiLineEntry()

@@ -7,11 +7,9 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 )
 
 const url = "http://127.0.0.1:8080"
-const tokenPath = "/request/token.txt"
 
 type method struct {
 	m string
@@ -30,16 +28,21 @@ func (t *method) DELETE() *method {
 	return &method{m: "DELETE"}
 }
 func (t *method) handler(path string, content interface{}) (response []byte, err error) {
-	d, err := json.Marshal(content)
-	if err != nil {
-		log.Println(err)
+	var data []byte
+	if content != nil {
+		data, err = json.Marshal(content)
+		if err != nil {
+			log.Println(err)
+		}
+	} else {
+		data = []byte("")
 	}
-	req, err := http.NewRequest(t.m, url+path, bytes.NewBuffer(d))
+	req, err := http.NewRequest(t.m, url+path, bytes.NewBuffer(data))
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Token", queryToken())
+	req.Header.Set("Token", tool.Api.Token.Get())
 	clinet := &http.Client{}
 	clientDb, err := clinet.Do(req)
 	defer clientDb.Body.Close()
@@ -47,32 +50,5 @@ func (t *method) handler(path string, content interface{}) (response []byte, err
 		return nil, err
 	}
 	body, err := io.ReadAll(clientDb.Body)
-	saveToken(clientDb)
 	return body, err
-}
-func saveToken(r *http.Response) string {
-	token := r.Header.Get("Token")
-	tokenFile, err := os.OpenFile(tool.ProjectPath()+tokenPath, os.O_TRUNC|os.O_CREATE, 0666)
-	defer tokenFile.Close()
-	if err != nil {
-		return ""
-	}
-	_, err = tokenFile.WriteString(token)
-	if err != nil {
-		return ""
-	}
-	return token
-}
-func queryToken() string {
-	file, err := os.OpenFile(tool.ProjectPath()+tokenPath, os.O_TRUNC|os.O_CREATE, 0666)
-	defer file.Close()
-	if err != nil {
-		return ""
-	}
-	token := make([]byte, 100)
-	i, err := file.Read(token)
-	if err != nil {
-		return ""
-	}
-	return string(token[:i])
 }

@@ -2,7 +2,10 @@ package tool
 
 import "os"
 
-func ProjectPath() (path string) {
+type path struct {
+}
+
+func (*path) Project() (path string) {
 	path, _ = os.Getwd()
 	return path
 }

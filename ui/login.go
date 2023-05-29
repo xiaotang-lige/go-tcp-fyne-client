@@ -6,9 +6,14 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 	"go_gui/server"
+	"go_gui/tool"
 )
 
 func login(w fyne.Window) {
+	if tool.Api.Token.Get() != "" {
+		newHome(w)
+		return
+	}
 	entry := widget.NewEntry()
 	password := widget.NewPasswordEntry()
 	form := &widget.Form{
