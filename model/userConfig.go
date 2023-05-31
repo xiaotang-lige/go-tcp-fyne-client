@@ -16,3 +16,5 @@ type UserData struct {
 	Age      int
 	Gender   int
 }
+
+var ClientUserConfig = new(UserConfig)

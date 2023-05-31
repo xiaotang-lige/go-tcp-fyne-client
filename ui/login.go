@@ -6,11 +6,13 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 	"go_gui/server"
-	"go_gui/tool"
 )
 
 func login(w fyne.Window) {
-	if tool.Api.Token.Get() != "" {
+	if server.Api.LoginVerify.LoginConfig() {
+		if !server.Api.Login.StartTcp() {
+
+		}
 		newHome(w)
 		return
 	}
@@ -23,6 +25,7 @@ func login(w fyne.Window) {
 		},
 		OnSubmit: func() {
 			if server.Api.Login.Verify(entry.Text, password.Text) {
+				server.Api.Login.StartTcp()
 				newHome(w)
 				return
 			}
@@ -30,6 +33,5 @@ func login(w fyne.Window) {
 			di.Show()
 		},
 	}
-
 	w.SetContent(container.NewVBox(form))
 }

@@ -16,10 +16,6 @@ import (
 
 func main() {
 	//os.Unsetenv("FYNE_FONT")
-	//tcp.TcpDialListen()
-	//tcp.Main()
-	////show()
-	//uiMain()
 
 	ui.Main()
 }

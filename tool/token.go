@@ -4,7 +4,7 @@ import (
 	"os"
 )
 
-const tokenPath = "/request/token.txt"
+const tokenPath = "/config/token.txt"
 
 type m struct {
 }
