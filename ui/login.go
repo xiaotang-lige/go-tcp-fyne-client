@@ -33,5 +33,6 @@ func login(w fyne.Window) {
 			di.Show()
 		},
 	}
+
 	w.SetContent(container.NewVBox(form))
 }

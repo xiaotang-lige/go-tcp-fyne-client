@@ -30,5 +30,6 @@ func (*login) StartTcp() bool {
 	tcp.TcpDialListen()
 	tcp.Main()
 	go MessageShow(model.ClientUserConfig.UserId)
+	go Api.InformMessage.Listen()
 	return b
 }
