@@ -9,7 +9,7 @@ func Main() {
 	app := app2.New()
 	wApp := app.NewWindow("TChat")
 	login(wApp)
-	wApp.Resize(fyne.NewSize(640, 460))
+	wApp.Resize(fyne.NewSize(840, 460))
 	wApp.ShowAndRun()
 
 }

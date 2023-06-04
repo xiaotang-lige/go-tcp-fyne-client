@@ -1,15 +1,11 @@
 package ui
 
 import (
-	"encoding/binary"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"github.com/boltdb/bolt"
-	"go_gui/file"
 	"go_gui/server"
-	"log"
-	"strconv"
+	"go_gui/tool"
 )
 
 func newHome(w fyne.Window) {
@@ -21,10 +17,15 @@ func newHome(w fyne.Window) {
 		return c
 	}
 	mes(messageContext, "1")
-
 	tabs := container.NewAppTabs(
 		container.NewTabItem("message", messageList(messageContext)),
 		container.NewTabItem("linkman", list),
+		container.NewTabItem("centre", widget.NewButton("exit", func() {
+			err := tool.Api.Token.Delete()
+			if err == nil {
+				login(w)
+			}
+		})),
 	)
 	//tabs.Append(container.NewTabItemWithIcon("Home", theme.HomeIcon(), widget.NewLabel("Home tab")))
 	tabs.SetTabLocation(container.TabLocationBottom)
@@ -34,49 +35,20 @@ func newHome(w fyne.Window) {
 	w.SetContent(container.NewMax(split))
 }
 func messageList(c *fyne.Container) *fyne.Container {
-	//grid := container.NewVBox()
-	////go func() {
-	////	for  {
-	////		time.Sleep(time.Duration(2) * time.Second)
-	////		grid.Remove(grid.Objects[0])
-	////	}
-	////}()
-	////var dataIndex map[string]int
-	//
-	//for i := 0; i < 9; i++ {
-	//	grid.Add(widget.NewLabel(strconv.Itoa(i)))
-	//}
-	grid := widget.NewButton("send", func() {
-		t, err := file.Db.Begin(true)
-		defer t.Rollback()
-		var b *bolt.Bucket
-		if b = t.Bucket([]byte("Kathryn Scott")); b == nil {
-			b, err = t.CreateBucket([]byte("Kathryn Scott"))
-		}
-		//x := b.Cursor()
-		//x.Last()
-		//ba := x.Bucket()
-		id, _ := b.NextSequence()
+	grid := container.NewVBox()
+	//go func() {
+	//	for  {
+	//		time.Sleep(time.Duration(2) * time.Second)
+	//		grid.Remove(grid.Objects[0])
+	//	}
+	//}()
+	//var dataIndex map[string]int
 
-		err = b.Put(itob(int(id)), []byte(strconv.FormatUint(id, 10)))
-		//err = b.Put([]byte("1"), []byte("Kathryn Scott"))
-		if err != nil {
-			log.Println(err)
-			t.Rollback()
-			return
-		}
-		t.Commit()
-		server.InforShowPut <- "Kathryn Scott"
-		server.InformLoadMessageInt <- 1
-	})
-	return container.NewBorder(nil, nil, nil, nil, grid)
+	go server.Api.InformMessage.ShowInform(grid)
+
+	return container.NewBorder(nil, nil, nil, nil, container.NewHScroll(grid))
 }
 
-func itob(v int) []byte {
-	b := make([]byte, 8)
-	binary.BigEndian.PutUint64(b, uint64(v))
-	return b
-}
 func newList(c *fyne.Container) *widget.List {
 	listData, l := server.Api.Likman.ShowAll()
 	list := widget.NewList(

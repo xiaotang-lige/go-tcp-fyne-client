@@ -3,13 +3,14 @@ package server
 import (
 	"go_gui/model"
 	"go_gui/request"
-	"go_gui/tcp"
 	"go_gui/tool"
+	"log"
 )
 
 type login struct {
 }
 
+// 登录后保存账号密码
 func (*login) Verify(z, p string) bool {
 	data := &model.UserConfig{}
 	data.UserId = z
@@ -23,13 +24,6 @@ func (*login) Verify(z, p string) bool {
 	}
 	tool.Api.Token.Save(userData.Token)
 	tool.Api.Config.Save(userData.UserId)
+	log.Println(Api.Init.Start())
 	return true
-}
-func (*login) StartTcp() bool {
-	b := Api.LoginVerify.LoginConfig()
-	tcp.TcpDialListen()
-	tcp.Main()
-	go MessageShow(model.ClientUserConfig.UserId)
-	go Api.InformMessage.Listen()
-	return b
 }

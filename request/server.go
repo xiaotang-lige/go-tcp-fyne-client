@@ -42,7 +42,7 @@ func (t *method) handler(path string, content interface{}) (response []byte, err
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Token", model.ClientUserConfig.Token)
+	req.Header.Set("Token", model.ConstMy.Token)
 	clinet := &http.Client{}
 	clientDb, err := clinet.Do(req)
 	defer clientDb.Body.Close()

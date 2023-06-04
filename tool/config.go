@@ -2,7 +2,7 @@ package tool
 
 import "os"
 
-const userPath = "/config/user.txt"
+const userPath = "/user.txt"
 
 type user struct {
 }

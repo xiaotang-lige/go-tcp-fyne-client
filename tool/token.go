@@ -4,7 +4,7 @@ import (
 	"os"
 )
 
-const tokenPath = "/config/token.txt"
+const tokenPath = "/token.txt"
 
 type m struct {
 }
@@ -33,4 +33,7 @@ func (*m) Get() string {
 		return ""
 	}
 	return string(token[:i])
+}
+func (*m) Delete() error {
+	return os.Remove(Api.Path.Project() + tokenPath)
 }

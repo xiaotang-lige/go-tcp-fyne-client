@@ -9,10 +9,7 @@ import (
 )
 
 func login(w fyne.Window) {
-	if server.Api.LoginVerify.LoginConfig() {
-		if !server.Api.Login.StartTcp() {
-
-		}
+	if server.Api.Init.Start() {
 		newHome(w)
 		return
 	}
@@ -25,7 +22,7 @@ func login(w fyne.Window) {
 		},
 		OnSubmit: func() {
 			if server.Api.Login.Verify(entry.Text, password.Text) {
-				server.Api.Login.StartTcp()
+
 				newHome(w)
 				return
 			}

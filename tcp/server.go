@@ -3,6 +3,7 @@ package tcp
 import (
 	"bufio"
 	"encoding/json"
+	"go_gui/file"
 	"go_gui/model"
 	"io"
 	"log"
@@ -20,9 +21,11 @@ func (*Tcp) messageListen(c net.Conn) {
 		msg := &model.Message{}
 		json.Unmarshal(megbyte, msg)
 		//MyContext.SetText(msg.Text)
-		model.MessageDataPut <- msg
-		//file.Api.Message.Set(msg.Target, megbyte)
+		//model.MessageDataPut <- msg
+		file.Api.Message.Set(msg.Target, megbyte) //保存消息
 		//server.InformLoadMessageInt <- 1
+		//model.InforShowPut <- msg.Target //通知标记
+		model.MessageDataPut <- msg
 	}
 }
 func (*Tcp) MessageWrite(c net.Conn, mes interface{}) error {

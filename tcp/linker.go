@@ -3,7 +3,7 @@ package tcp
 import (
 	"encoding/json"
 	"fmt"
-	"go_gui/tool"
+	"go_gui/model"
 	"log"
 	"net"
 )
@@ -15,7 +15,7 @@ func TcpDialListen() error {
 		fmt.Println("dial failed, err", err)
 		return err
 	}
-	context, err := json.Marshal(tool.Api.Token.Get())
+	context, err := json.Marshal(model.ConstMy.Token)
 	if err != nil {
 		log.Println(err)
 		return err
